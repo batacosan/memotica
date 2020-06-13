@@ -9,7 +9,7 @@ import android.util.Log;
 public class TestOpenHelper extends SQLiteOpenHelper {
 
     // データーベースのバージョン
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     // データーベース名
     private static final String DATABASE_NAME = "TestDB.db";
@@ -58,7 +58,7 @@ public class TestOpenHelper extends SQLiteOpenHelper {
         onUpgrade(db, oldVersion, newVersion);
     }
 
-    public void createDate(String id) {
+    public void createData(String id) {
         // 新しくメモをデータベースに保存
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
@@ -74,5 +74,12 @@ public class TestOpenHelper extends SQLiteOpenHelper {
         cv.put("content", content);
         String[] args = {id};
         db.update(TABLE_NAME, cv, "uuid=?", args);
+    }
+
+    public void deleteMemo(String uuid){
+        // データを削除
+        SQLiteDatabase db = this.getWritableDatabase();
+        String[] args = {uuid};
+        db.delete(TABLE_NAME, "uuid=?", args);
     }
 }

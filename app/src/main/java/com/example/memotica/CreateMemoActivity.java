@@ -47,7 +47,7 @@ public class CreateMemoActivity extends AppCompatActivity {
             public void onClick(View view) {
                 EditText content_field = findViewById(R.id.edit_content);
 
-                String text = content_field.getText().toString();
+                String content = content_field.getText().toString();
                 helper.saveData(id, content);
 
                 finish();
