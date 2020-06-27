@@ -14,6 +14,8 @@ import android.widget.EditText;
 public class CreateMemoActivity extends AppCompatActivity {
 
     private TestOpenHelper helper;
+    private EditText title_field;
+    private EditText content_field;
 
     private String id;      //メモのid
 
@@ -32,12 +34,15 @@ public class CreateMemoActivity extends AppCompatActivity {
 
         //データベースから指定のidのメモを取得
         String[] args = {id};
-        Cursor c = (Cursor) db.rawQuery("SELECT content FROM testdb WHERE uuid=?", args);
+        Cursor c = (Cursor) db.rawQuery("SELECT title, content FROM testdb WHERE uuid=?", args);
 
         //新規のメモにテキストをセット
         c.moveToFirst();
-        EditText content_field = findViewById(R.id.edit_content);
-        final String content = c.getString(0);
+        title_field = findViewById(R.id.edit_title);
+        content_field = findViewById(R.id.edit_content);
+        final String title = c.getString(0);
+        title_field.setText(title);
+        final String content = c.getString(1);
         content_field.setText(content);
 
         //メモの内容をデータベースへ保存しメイン画面へ
@@ -45,16 +50,12 @@ public class CreateMemoActivity extends AppCompatActivity {
         insert_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                EditText content_field = findViewById(R.id.edit_content);
-
+                String title = title_field.getText().toString();
                 String content = content_field.getText().toString();
-                helper.saveData(id, content);
+                helper.saveData(id, title, content);
 
                 finish();
             }
         });
     }
-
-
-
 }
