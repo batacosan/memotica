@@ -9,19 +9,23 @@ import android.util.Log;
 public class TestOpenHelper extends SQLiteOpenHelper {
 
     // データーベースのバージョン
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 1;
 
     // データーベース名
     private static final String DATABASE_NAME = "TestDB.db";
     private static final String TABLE_NAME = "testdb";
     private static final String COLUMN_NAME_UUID = "uuid";
+    private static final String COLUMN_NAME_TITLE = "title";
     private static final String COLUMN_NAME_CONTENT = "content";
+    private static final String COLUMN_NAME_UPDATED = "updated";
 
 
     private static final String SQL_CREATE_ENTRIES =
             "CREATE TABLE " + TABLE_NAME + " (" +
-                    COLUMN_NAME_UUID     +  " TEXT PRIMARY KEY, " +
-                    COLUMN_NAME_CONTENT  + " TEXT)";
+                    COLUMN_NAME_UUID     + " TEXT PRIMARY KEY, " +
+                    COLUMN_NAME_TITLE    + " TEXT, " +
+                    COLUMN_NAME_CONTENT  + " TEXT, " +
+                    COLUMN_NAME_UPDATED  + " TEXT)";
 
     private static final String SQL_DELETE_ENTRIES =
             "DROP TABLE IF EXISTS " + TABLE_NAME;
@@ -63,14 +67,17 @@ public class TestOpenHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put("uuid", id);
+        cv.put("title", "");
         cv.put("content", "");
+        cv.put("updated", "yyyy/mm/dd");
         db.insert(TABLE_NAME, null, cv);
     }
 
-    public void saveData(String id, String content ) {
+    public void saveData(String id, String title, String content ) {
         // データを更新
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
+        cv.put("title", title);
         cv.put("content", content);
         String[] args = {id};
         db.update(TABLE_NAME, cv, "uuid=?", args);

@@ -50,7 +50,6 @@ public class MainActivity extends AppCompatActivity {
     private void createNewMemo(){
         // 新しいidの作成
         String uuid = UUID.randomUUID().toString();
-        id = uuid;
         helper = new TestOpenHelper(this);
         helper.createData(uuid);
         startIntent(uuid);
@@ -72,50 +71,45 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected  void onResume() {
-        super.onResume();
-        Cursor c;
+            super.onResume();
+            Cursor c;
 
-        //ヘルパーとデータベース生成
-        helper = new TestOpenHelper(this);
-        SQLiteDatabase db = helper.getWritableDatabase();
+            //ヘルパーとデータベース生成
+            helper = new TestOpenHelper(this);
+            SQLiteDatabase db = helper.getWritableDatabase();
 
-        //新規作成ボタンが押されたときの処理
-        Button new_button = findViewById(R.id.newmemo_button);
-        new_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                createNewMemo();
+            //データベースからすべてのデータ取得
+            c = db.rawQuery("SELECT uuid, title, content FROM testdb", null);
+            // データをリストへ追加
+            final ArrayList<String> id_list = new ArrayList<>();     // idのリスト
+            final ArrayList<String> title   = new ArrayList<>();     // タイトルのリスト
+            final ArrayList<String> content = new ArrayList<>();     //内容のリスト
+            boolean index = c.moveToFirst();
+            while (index) {
+                id_list.add(c.getString(0));
+                title.add(c.getString(1));
+                content.add(c.getString(2));
+                Log.i("debug", "c.getString0 = " + c.getString(0));
+                Log.i("debug", "c.getString1 = " + c.getString(1));
+                Log.i("debug", "c.getString2 = " + c.getString(2));
+                index = c.moveToNext();
             }
-        });
+            //　List_Viewにデータをセット
+            final ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
+                    android.R.layout.simple_list_item_1, title);
+            ListView list = findViewById(R.id.memo_list);
+            list.setAdapter(adapter);
 
-        //データベースからすべてのデータ取得
-        c = db.rawQuery("SELECT uuid, content FROM testdb", null);
-        // データをリストへ追加
-        final ArrayList<String> id_list = new ArrayList<>();     // idのリスト
-        final ArrayList<String> content = new ArrayList<>();     //内容のリスト
-        boolean index = c.moveToFirst();
-        while (index) {
-            id_list.add(c.getString(0));
-            content.add(c.getString(1));
-            Log.i("debug", "c.getString = " + c.getString(0));
-            index = c.moveToNext();
-        }
-        //　List_Viewにデータをセット
-        final ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_list_item_1, content);
-        ListView list = findViewById(R.id.memo_list);
-        list.setAdapter(adapter);
-
-        //アイテムを編集
-        list.setOnItemClickListener(
-            new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                    id = id_list.get(i);
-                    startIntent(id);
-                }
-            }
-        );
+            //アイテムを編集
+            list.setOnItemClickListener(
+                    new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                            id = id_list.get(i);
+                            startIntent(id);
+                        }
+                    }
+            );
 
         // 長押しでメモを削除
         list.setOnItemLongClickListener(
