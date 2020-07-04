@@ -1,10 +1,14 @@
+package com.example.memotica;
+
 import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import com.example.memotica.ListItem;
 import com.example.memotica.R;
 
 import java.util.ArrayList;
@@ -44,7 +48,10 @@ public class MyListAdapter extends BaseAdapter {
             convertView = activity.getLayoutInflater()
                     .inflate(resource, null);
         }
-        ((TextView) convertView.findViewById(R.id.title)).setText(item.getTitle());
+        ((TextView) convertView.findViewById(R.id.text_title)).setText(item.getTitle());
+        ((TextView) convertView.findViewById(R.id.text_content)).setText(item.getContent());
+        ((TextView) convertView.findViewById(R.id.text_updated)).setText(item.getUpdated());
+        Log.i("debug", "item.getupdated() = " + item.getUpdated());
         return convertView;
     }
 }
