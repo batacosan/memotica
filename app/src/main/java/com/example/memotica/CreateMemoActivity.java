@@ -50,11 +50,11 @@ public class CreateMemoActivity extends AppCompatActivity {
         insert_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String title = title_field.getText().toString();
-                String content = content_field.getText().toString();
-                helper.saveData(id, title, content);
+            String title = title_field.getText().toString();
+            String content = content_field.getText().toString();
+            helper.saveData(id, title, content);
 
-                finish();
+            finish();
             }
         });
     }
