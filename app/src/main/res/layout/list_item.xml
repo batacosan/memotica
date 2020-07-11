@@ -20,9 +20,9 @@
             android:id="@+id/text_updated"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:textSize="12sp"
-            android:text="TextView" />
+            android:layout_gravity="right"
+            android:text="TextView"
+            android:textSize="12sp" />
 
     </LinearLayout>
 

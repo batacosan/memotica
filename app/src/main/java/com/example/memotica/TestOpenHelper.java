@@ -33,25 +33,25 @@ public class TestOpenHelper extends SQLiteOpenHelper {
 
     //　メモテーブルのカラム定義
     private static final String SQL_CREATE_ENTRIES_TEST =
-            "CREATE TABLE " + TEST_TABLE_NAME + " (" +
-                    COLUMN_NAME_UUID     + " TEXT PRIMARY KEY, " +
-                    COLUMN_NAME_TITLE    + " TEXT, " +
-                    COLUMN_NAME_CONTENT  + " TEXT, " +
-                    COLUMN_NAME_UPDATED  + " TEXT)";
+        "CREATE TABLE " + TEST_TABLE_NAME + " (" +
+            COLUMN_NAME_UUID     + " TEXT PRIMARY KEY, " +
+            COLUMN_NAME_TITLE    + " TEXT, " +
+            COLUMN_NAME_CONTENT  + " TEXT, " +
+            COLUMN_NAME_UPDATED  + " TEXT)";
 
     //　更新日時テーブルのカラム定義
     private static final String SQL_CREATE_ENTRIES_DATE =
-            "CREATE TABLE " + DATE_TABLE_NAME + " (" +
-                    COLUMN_NAME_DATE_UUID    + " TEXT, " +
-                    COLUMN_NAME_UPDATED1     + " TEXT, " +
-                    COLUMN_NAME_UPDATED2     + " TEXT, " +
-                    COLUMN_NAME_UPDATED3     + " TEXT)";
+        "CREATE TABLE " + DATE_TABLE_NAME + " (" +
+            COLUMN_NAME_DATE_UUID    + " TEXT, " +
+            COLUMN_NAME_UPDATED1     + " TEXT, " +
+            COLUMN_NAME_UPDATED2     + " TEXT, " +
+            COLUMN_NAME_UPDATED3     + " TEXT)";
 
     private static final String SQL_DELETE_ENTRIES_TEST =
-            "DROP TABLE IF EXISTS " + TEST_TABLE_NAME;
+        "DROP TABLE IF EXISTS " + TEST_TABLE_NAME;
 
     private static final String SQL_DELETE_ENTRIES_DATE =
-            "DROP TABLE IF EXISTS " + DATE_TABLE_NAME;
+        "DROP TABLE IF EXISTS " + DATE_TABLE_NAME;
 
     TestOpenHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -72,7 +72,6 @@ public class TestOpenHelper extends SQLiteOpenHelper {
         );
 
         Log.d("debug", "onCreate(SQLiteDatabase db)");
-
     }
 
     @Override
@@ -131,8 +130,8 @@ public class TestOpenHelper extends SQLiteOpenHelper {
 
         // 更新日の更新
         Cursor c = db.rawQuery("SELECT updated1, updated2" +
-                " FROM " + DATE_TABLE_NAME +
-                " WHERE uuid=?", args);
+                                    " FROM " + DATE_TABLE_NAME +
+                                     " WHERE uuid=?", args);
 
         cv.clear();
         c.moveToFirst();
