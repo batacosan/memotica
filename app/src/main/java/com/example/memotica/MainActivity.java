@@ -15,6 +15,7 @@ package com.example.memotica;
         import android.widget.TextView;
 
         import java.util.ArrayList;
+        import java.util.Random;
         import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity {
@@ -25,25 +26,24 @@ public class MainActivity extends AppCompatActivity {
 
     //メモのUUID
     private String id;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+            super.onCreate(savedInstanceState);
+            setContentView(R.layout.activity_main);
 
-        Cursor c;
+            Cursor c;
 
-        //ヘルパーとデータベース生成
-        helper = new TestOpenHelper(this);
-        SQLiteDatabase db = helper.getWritableDatabase();
+            //ヘルパーとデータベース生成
+            helper = new TestOpenHelper(this);
+            SQLiteDatabase db = helper.getWritableDatabase();
 
-        //新規作成ボタンが押されたときの処理
-        Button new_button = findViewById(R.id.newmemo_button);
+            //新規作成ボタンが押されたときの処理
+            Button new_button = findViewById(R.id.newmemo_button);
         new_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                createNewMemo();
-            }
+                @Override
+                public void onClick(View view) {
+                    createNewMemo();
+                }
         });
     }
 
@@ -72,31 +72,45 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected  void onResume() {
             super.onResume();
-            Cursor c;
+            Cursor c, ct;
 
             //ヘルパーとデータベース生成
             helper = new TestOpenHelper(this);
             SQLiteDatabase db = helper.getWritableDatabase();
 
             //データベースからすべてのデータ取得
-            c = db.rawQuery("SELECT uuid, title, content FROM testdb", null);
-            // データをリストへ追加
-            final ArrayList<String> id_list = new ArrayList<>();     // idのリスト
-            final ArrayList<String> title   = new ArrayList<>();     // タイトルのリスト
-            final ArrayList<String> content = new ArrayList<>();     //内容のリスト
+            c = db.rawQuery("SELECT uuid, title, content, updated FROM testdb", null);
+            //取得したデータの位置が末尾かを表す変数宣言
             boolean index = c.moveToFirst();
-            while (index) {
+
+            //データベースの内容をListItemオブジェクトに詰め替え
+            final ArrayList<ListItem> data = new ArrayList<>();
+            final ArrayList<String> id_list = new ArrayList<>();  //uuidのリスト
+            while(index) {
+                //uuidのリストを作成
                 id_list.add(c.getString(0));
-                title.add(c.getString(1));
-                content.add(c.getString(2));
-                Log.i("debug", "c.getString0 = " + c.getString(0));
-                Log.i("debug", "c.getString1 = " + c.getString(1));
-                Log.i("debug", "c.getString2 = " + c.getString(2));
+                ListItem item = new ListItem();
+                item.setId((new Random()).nextLong());
+                item.setTitle(c.getString(1));
+                item.setContent(c.getString(2));
+
+                //メモの更新日時を取得
+                String[] args = {c.getString(0)};
+                String   date_string;
+                ct = db.rawQuery("SELECT updated1, updated2, updated3 FROM datedb where uuid=?", args);
+                ct.moveToFirst();
+                // メモの更新日時を表示用に整形
+                date_string = ct.getString(0) + "\r\n" + ct.getString(1)
+                                                            + "\r\n" + ct.getString(2);
+                item.setUpdated(date_string);
+
+                data.add(item);
                 index = c.moveToNext();
+                ct.moveToNext();
             }
+
             //　List_Viewにデータをセット
-            final ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
-                    android.R.layout.simple_list_item_1, title);
+            final MyListAdapter adapter = new MyListAdapter(this, data, R.layout.list_item);
             ListView list = findViewById(R.id.memo_list);
             list.setAdapter(adapter);
 
@@ -111,16 +125,17 @@ public class MainActivity extends AppCompatActivity {
                     }
             );
 
-        // 長押しでメモを削除
-        list.setOnItemLongClickListener(
-            new AdapterView.OnItemLongClickListener() {
-                @Override
-                public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-                    deleteData(id_list.get(i));
-                    adapter.remove((String) ((TextView) view).getText());
-                    return true;    // クリックの処理は発生させない
+            // 長押しでメモを削除
+            list.setOnItemLongClickListener(
+                new AdapterView.OnItemLongClickListener() {
+                    @Override
+                    public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                        //データベースから削除対象のメモを削除
+                        deleteData(id_list.get(i));
+                        adapter.delete(i);
+                        return true;    // クリックの処理は発生させない
+                    }
                 }
-            }
-        );
+            );
     }
 }
