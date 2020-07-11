@@ -72,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected  void onResume() {
             super.onResume();
-            Cursor c;
+            Cursor c, ct;
 
             //ヘルパーとデータベース生成
             helper = new TestOpenHelper(this);
@@ -84,48 +84,36 @@ public class MainActivity extends AppCompatActivity {
             boolean index = c.moveToFirst();
 
             //データベースの内容をListItemオブジェクトに詰め替え
-            ArrayList<ListItem> data = new ArrayList<>();
+            final ArrayList<ListItem> data = new ArrayList<>();
+            final ArrayList<String> id_list = new ArrayList<>();  //uuidのリスト
             while(index) {
+                //uuidのリストを作成
+                id_list.add(c.getString(0));
                 ListItem item = new ListItem();
                 item.setId((new Random()).nextLong());
                 item.setTitle(c.getString(1));
                 item.setContent(c.getString(2));
-                item.setUpdated(c.getString(3));
-                Log.i("debug", "c.getString3 = " + c.getString(3));
+
+                //メモの更新日時を取得
+                String[] args = {c.getString(0)};
+                String   date_string;
+                ct = db.rawQuery("SELECT updated1, updated2, updated3 FROM datedb where uuid=?", args);
+                ct.moveToFirst();
+                // メモの更新日時を表示用に整形
+                date_string = ct.getString(0) + "\r\n" + ct.getString(1)
+                                                            + "\r\n" + ct.getString(2);
+                item.setUpdated(date_string);
+
                 data.add(item);
                 index = c.moveToNext();
+                ct.moveToNext();
             }
 
             //　List_Viewにデータをセット
-            MyListAdapter adapter = new MyListAdapter(this, data, R.layout.list_item);
+            final MyListAdapter adapter = new MyListAdapter(this, data, R.layout.list_item);
             ListView list = findViewById(R.id.memo_list);
             list.setAdapter(adapter);
 
-            /*
-            //データベースからすべてのデータ取得
-            c = db.rawQuery("SELECT uuid, title, content, updated FROM testdb", null);
-            // データをリストへ追加
-            final ArrayList<String> id_list = new ArrayList<>();     // idのリスト
-            final ArrayList<String> title   = new ArrayList<>();     // タイトルのリスト
-            final ArrayList<String> content = new ArrayList<>();     //内容のリスト
-            final ArrayList<String> updated = new ArrayList<>();     //内容のリスト
-            boolean index = c.moveToFirst();
-            */
-
-            /*
-            while (index) {
-                id_list.add(c.getString(0));
-                title.add(c.getString(1));
-                content.add(c.getString(2));
-                updated.add(c.getString(3));
-                Log.i("debug", "c.getString0 = " + c.getString(0));
-                Log.i("debug", "c.getString1 = " + c.getString(1));
-                Log.i("debug", "c.getString2 = " + c.getString(2));
-                index = c.moveToNext();
-            }
-            */
-
-            /*
             //アイテムを編集
             list.setOnItemClickListener(
                     new AdapterView.OnItemClickListener() {
@@ -142,13 +130,12 @@ public class MainActivity extends AppCompatActivity {
                 new AdapterView.OnItemLongClickListener() {
                     @Override
                     public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                        //データベースから削除対象のメモを削除
                         deleteData(id_list.get(i));
-                        adapter.remove((String) ((TextView) view).getText());
+                        adapter.delete(i);
                         return true;    // クリックの処理は発生させない
                     }
                 }
             );
-            */
-
     }
 }

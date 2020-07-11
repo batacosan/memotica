@@ -54,4 +54,9 @@ public class MyListAdapter extends BaseAdapter {
         Log.i("debug", "item.getupdated() = " + item.getUpdated());
         return convertView;
     }
+
+    public void delete(int pos){
+        data.remove(pos);
+        notifyDataSetChanged();
+    }
 }
